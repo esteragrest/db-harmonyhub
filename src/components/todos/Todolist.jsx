@@ -1,13 +1,24 @@
 import styles from './todolist.module.css';
 import PropTypes from 'prop-types';
 
-export const Todolist = ({ todos }) => {
+export const Todolist = ({ todos, onDelete, onEdit, onToggle }) => {
 	return (
 		<div className={styles.todos}>
-			{todos.map(({ id, title }) => {
+			{todos.map(({ id, title, completed }) => {
 				return (
 					<div className={styles.todo} key={id}>
-						<p>{title}</p>
+						<p
+							style={{
+								textDecoration: completed ? 'line-through' : 'none',
+							}}
+						>
+							{title}
+						</p>
+						<button onClick={() => onToggle(id)}>
+							{completed ? 'Не выполнено' : 'Выполнено'}
+						</button>
+						<button onClick={() => onEdit(id)}>Редактировать</button>
+						<button onClick={() => onDelete(id)}>Удалить</button>
 					</div>
 				);
 			})}
@@ -16,5 +27,8 @@ export const Todolist = ({ todos }) => {
 };
 
 Todolist.propTypes = {
-	todos: PropTypes.array,
+	todos: PropTypes.array.isRequired,
+	onDelete: PropTypes.func.isRequired,
+	onEdit: PropTypes.func.isRequired,
+	onToggle: PropTypes.func.isRequired,
 };

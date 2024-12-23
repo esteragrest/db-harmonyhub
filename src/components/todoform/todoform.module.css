@@ -1,0 +1,17 @@
+form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+}
+
+.newtodo {
+	border: none;
+	padding: 15px;
+	font-size: 18px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	margin-left: 5px;
+	background-color: rgb(76, 141, 255);
+	color: #fff;
+}
