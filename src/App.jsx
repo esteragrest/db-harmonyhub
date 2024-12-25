@@ -14,22 +14,20 @@ import { SearchForm } from './components/searchform/Searchform';
 export const App = () => {
 	const [todoValue, setTodoValue] = useState('');
 	const [editingTodoId, setEditingTodoId] = useState(null);
-	const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
 	const [isSorted, setIsSorted] = useState(false);
 	const [searchValue, setSearchValue] = useState('');
 
-	const refreshTodos = () => setRefreshTodosFlag(!refreshTodosFlag);
 	const toggleSorted = () => {
 		setIsSorted(!isSorted);
 	};
 
-	const todos = useRequestGetTodos(refreshTodosFlag);
-	const requestAddNewTodo = useRequestAddNewTodo(refreshTodos);
-	const requestEditTodo = useRequestEditingTodo(refreshTodos, setEditingTodoId);
-	const requestDeleteTodo = useRequestDeletetodo(refreshTodos);
-	const requestCompletedTodo = useRequestCompletedTodo(
+	const [todosObject, isLoading] = useRequestGetTodos();
+	const todos = Object.entries(todosObject).map(([id, todo]) => ({ id, ...todo }));
+	const [requestAddNewTodo, isCreating] = useRequestAddNewTodo();
+	const [requestEditTodo, isUpdatingTitle] = useRequestEditingTodo(setEditingTodoId);
+	const [requestDeleteTodo, isDelete] = useRequestDeletetodo();
+	const [requestCompletedTodo, isUpdatingCompleted] = useRequestCompletedTodo(
 		todos,
-		refreshTodos,
 		setEditingTodoId,
 	);
 
@@ -49,22 +47,33 @@ export const App = () => {
 	return (
 		<div className={styles.app}>
 			<div className={styles['to-do-list-container']}>
-				<Todoform
-					value={todoValue}
-					onChange={setTodoValue}
-					requestAddNewTodo={requestAddNewTodo}
-					editingTodoId={editingTodoId}
-					requestEditTodo={requestEditTodo}
-					isSorted={isSorted}
-					toggleSorted={toggleSorted}
-				/>
-				<SearchForm value={searchValue} setSearchValue={setSearchValue} />
-				<Todolist
-					todos={filteredTodos}
-					onDelete={requestDeleteTodo}
-					onEdit={handleEditTodo}
-					onToggle={requestCompletedTodo}
-				/>
+				{isLoading ? (
+					<div className="loader">Loading...</div>
+				) : (
+					<>
+						<Todoform
+							value={todoValue}
+							onChange={setTodoValue}
+							requestAddNewTodo={requestAddNewTodo}
+							editingTodoId={editingTodoId}
+							requestEditTodo={requestEditTodo}
+							isSorted={isSorted}
+							toggleSorted={toggleSorted}
+							isCreating={isCreating}
+							isUpdatingTitle={isUpdatingTitle}
+						/>
+						<SearchForm value={searchValue} setSearchValue={setSearchValue} />
+						<Todolist
+							todos={filteredTodos}
+							onDelete={requestDeleteTodo}
+							onEdit={handleEditTodo}
+							onToggle={requestCompletedTodo}
+							isUpdatingTitle={isUpdatingTitle}
+							isUpdatingCompleted={isUpdatingCompleted}
+							isDelete={isDelete}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

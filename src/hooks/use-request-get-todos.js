@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
+import { ref, onValue } from 'firebase/database';
+import { todos_db } from '../firebase';
 
-export const useRequestGetTodos = (refreshTodosFlag) => {
-	const [todos, setTodos] = useState([]);
-	//const [isLoading, setIsLoading] = useState(false);
+export const useRequestGetTodos = () => {
+	const [todos, setTodos] = useState({});
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		fetch('http://localhost:3000/todos')
-			.then((loadedData) => loadedData.json())
-			.then((loadedToDos) => {
-				setTodos(loadedToDos);
-			})
-			.catch(() => {
-				console.log('Ошибка загрузки дел');
-			});
-	}, [refreshTodosFlag]);
+		const todosDbRef = ref(todos_db, 'todos');
 
-	return todos;
+		return onValue(todosDbRef, (snapshot) => {
+			const loadedToDos = snapshot.val() || {};
+			setTodos(loadedToDos);
+
+			setIsLoading(false);
+		});
+	}, []);
+
+	return [todos, isLoading];
 };

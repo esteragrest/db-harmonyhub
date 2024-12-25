@@ -1,16 +1,19 @@
-export const useRequestAddNewTodo = (refreshTodos) => {
+import { ref, push } from 'firebase/database';
+import { todos_db } from '../firebase';
+import { useState } from 'react';
+
+export const useRequestAddNewTodo = () => {
+	const [isCreating, setIsCreating] = useState(false);
 	const requestAddNewTodo = (newTodo) => {
-		fetch('http://localhost:3000/todos', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify(newTodo),
-		})
-			.then((rawResponse) => rawResponse.json())
+		setIsCreating(true);
+		const todosDbRef = ref(todos_db, 'todos');
+
+		push(todosDbRef, newTodo)
 			.then((response) => {
 				console.log('Новое дело добавлено, ответ сервера: ', response);
-				refreshTodos();
-			});
+			})
+			.finally(() => setIsCreating(false));
 	};
 
-	return requestAddNewTodo;
+	return [requestAddNewTodo, isCreating];
 };

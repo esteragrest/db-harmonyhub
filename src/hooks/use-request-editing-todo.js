@@ -1,17 +1,20 @@
-export const useRequestEditingTodo = (refreshTodos, setEditingTodoId) => {
+import { ref, set } from 'firebase/database';
+import { todos_db } from '../firebase';
+import { useState } from 'react';
+
+export const useRequestEditingTodo = (setEditingTodoId) => {
+	const [isUpdatingTitle, setIsUpdatingTitle] = useState(false);
 	const requestEditTodo = (id, updatingTodo) => {
-		fetch(`http://localhost:3000/todos/${id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify(updatingTodo),
-		})
-			.then((rawResponse) => rawResponse.json())
+		setIsUpdatingTitle(true);
+		const todoDbRef = ref(todos_db, `todos/${id}`);
+
+		set(todoDbRef, updatingTodo)
 			.then((response) => {
 				console.log('Дело обновлено, ответ сервера: ', response);
 				setEditingTodoId(null);
-				refreshTodos();
-			});
+			})
+			.finally(() => setIsUpdatingTitle(false));
 	};
 
-	return requestEditTodo;
+	return [requestEditTodo, isUpdatingTitle];
 };
