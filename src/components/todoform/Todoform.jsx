@@ -9,6 +9,8 @@ export const Todoform = ({
 	requestEditTodo,
 	isSorted,
 	toggleSorted,
+	isCreating,
+	isUpdatingTitle,
 }) => {
 	const handleOnSubmit = (event) => {
 		event.preventDefault();
@@ -34,7 +36,10 @@ export const Todoform = ({
 					placeholder="Заполнить список дел..."
 				/>
 				<div className={styles.buttonContainer}>
-					<button className={styles.newtodo}>
+					<button
+						className={styles.newtodo}
+						disabled={isCreating && isUpdatingTitle}
+					>
 						{editingTodoId ? 'Обновить запись' : 'Записать'}
 					</button>
 					<button
@@ -57,4 +62,6 @@ Todoform.propTypes = {
 	requestEditTodo: PropTypes.func,
 	isSorted: PropTypes.bool,
 	toggleSorted: PropTypes.func,
+	isCreating: PropTypes.bool,
+	isUpdatingTitle: PropTypes.bool,
 };

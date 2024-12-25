@@ -23,11 +23,14 @@ export const App = () => {
 		setIsSorted(!isSorted);
 	};
 
-	const todos = useRequestGetTodos(refreshTodosFlag);
-	const requestAddNewTodo = useRequestAddNewTodo(refreshTodos);
-	const requestEditTodo = useRequestEditingTodo(refreshTodos, setEditingTodoId);
-	const requestDeleteTodo = useRequestDeletetodo(refreshTodos);
-	const requestCompletedTodo = useRequestCompletedTodo(
+	const [todos, isLoading] = useRequestGetTodos(refreshTodosFlag);
+	const [requestAddNewTodo, isCreating] = useRequestAddNewTodo(refreshTodos);
+	const [requestEditTodo, isUpdatingTitle] = useRequestEditingTodo(
+		refreshTodos,
+		setEditingTodoId,
+	);
+	const [requestDeleteTodo, isDelete] = useRequestDeletetodo(refreshTodos);
+	const [requestCompletedTodo, isUpdatingCompleted] = useRequestCompletedTodo(
 		todos,
 		refreshTodos,
 		setEditingTodoId,
@@ -49,22 +52,33 @@ export const App = () => {
 	return (
 		<div className={styles.app}>
 			<div className={styles['to-do-list-container']}>
-				<Todoform
-					value={todoValue}
-					onChange={setTodoValue}
-					requestAddNewTodo={requestAddNewTodo}
-					editingTodoId={editingTodoId}
-					requestEditTodo={requestEditTodo}
-					isSorted={isSorted}
-					toggleSorted={toggleSorted}
-				/>
-				<SearchForm value={searchValue} setSearchValue={setSearchValue} />
-				<Todolist
-					todos={filteredTodos}
-					onDelete={requestDeleteTodo}
-					onEdit={handleEditTodo}
-					onToggle={requestCompletedTodo}
-				/>
+				{isLoading ? (
+					<div className="loader">Loading...</div>
+				) : (
+					<>
+						<Todoform
+							value={todoValue}
+							onChange={setTodoValue}
+							requestAddNewTodo={requestAddNewTodo}
+							editingTodoId={editingTodoId}
+							requestEditTodo={requestEditTodo}
+							isSorted={isSorted}
+							toggleSorted={toggleSorted}
+							isCreating={isCreating}
+							isUpdatingTitle={isUpdatingTitle}
+						/>
+						<SearchForm value={searchValue} setSearchValue={setSearchValue} />
+						<Todolist
+							todos={filteredTodos}
+							onDelete={requestDeleteTodo}
+							onEdit={handleEditTodo}
+							onToggle={requestCompletedTodo}
+							isUpdatingTitle={isUpdatingTitle}
+							isUpdatingCompleted={isUpdatingCompleted}
+							isDelete={isDelete}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

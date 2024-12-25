@@ -1,5 +1,10 @@
+import { useState } from 'react';
+
 export const useRequestCompletedTodo = (todos, refreshTodos, setEditingTodoId) => {
+	const [isUpdatingCompleted, setIsUpdatingCompleted] = useState(false);
+
 	const requestCompletedTodo = (id) => {
+		setIsUpdatingCompleted(true);
 		const todoToToggle = todos.find((todo) => todo.id === id);
 
 		fetch(`http://localhost:3000/todos/${id}`, {
@@ -12,8 +17,9 @@ export const useRequestCompletedTodo = (todos, refreshTodos, setEditingTodoId) =
 				console.log('Дело обновлено, ответ сервера: ', response);
 				setEditingTodoId(null);
 				refreshTodos();
-			});
+			})
+			.finally(false);
 	};
 
-	return requestCompletedTodo;
+	return [requestCompletedTodo, isUpdatingCompleted];
 };
