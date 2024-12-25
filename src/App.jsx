@@ -9,12 +9,14 @@ import styles from './app.module.css';
 import { useState } from 'react';
 import { Todolist } from './components/todos/Todolist';
 import { Todoform } from './components/todoform/Todoform';
+import { SearchForm } from './components/searchform/Searchform';
 
 export const App = () => {
 	const [todoValue, setTodoValue] = useState('');
 	const [editingTodoId, setEditingTodoId] = useState(null);
 	const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
 	const [isSorted, setIsSorted] = useState(false);
+	const [searchValue, setSearchValue] = useState('');
 
 	const refreshTodos = () => setRefreshTodosFlag(!refreshTodosFlag);
 	const toggleSorted = () => {
@@ -41,6 +43,9 @@ export const App = () => {
 		? [...todos].sort((a, b) => a.title.localeCompare(b.title))
 		: todos;
 
+	const filteredTodos = sortedTodos.filter((todo) =>
+		todo.title.toLowerCase().includes(searchValue),
+	);
 	return (
 		<div className={styles.app}>
 			<div className={styles['to-do-list-container']}>
@@ -53,8 +58,9 @@ export const App = () => {
 					isSorted={isSorted}
 					toggleSorted={toggleSorted}
 				/>
+				<SearchForm value={searchValue} setSearchValue={setSearchValue} />
 				<Todolist
-					todos={sortedTodos}
+					todos={filteredTodos}
 					onDelete={requestDeleteTodo}
 					onEdit={handleEditTodo}
 					onToggle={requestCompletedTodo}
