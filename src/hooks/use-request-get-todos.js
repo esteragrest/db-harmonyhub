@@ -15,5 +15,5 @@ export const useRequestGetTodos = (refreshTodosFlag) => {
 			});
 	}, [refreshTodosFlag]);
 
-	return [todos];
+	return todos;
 };

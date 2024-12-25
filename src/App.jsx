@@ -1,87 +1,45 @@
-import { useEffect } from 'react';
+import {
+	useRequestGetTodos,
+	useRequestAddNewTodo,
+	useRequestEditingTodo,
+	useRequestDeletetodo,
+	useRequestCompletedTodo,
+} from './hooks';
 import styles from './app.module.css';
 import { useState } from 'react';
 import { Todolist } from './components/todos/Todolist';
 import { Todoform } from './components/todoform/Todoform';
 
 export const App = () => {
-	const [todos, setTodos] = useState([]);
 	const [todoValue, setTodoValue] = useState('');
 	const [editingTodoId, setEditingTodoId] = useState(null);
 	const [refreshTodosFlag, setRefreshTodosFlag] = useState(false);
+	const [isSorted, setIsSorted] = useState(false);
 
 	const refreshTodos = () => setRefreshTodosFlag(!refreshTodosFlag);
-
-	useEffect(() => {
-		fetch('http://localhost:3000/todos')
-			.then((loadedData) => loadedData.json())
-			.then((loadedToDos) => {
-				setTodos(loadedToDos);
-			})
-			.catch(() => {
-				console.log('Ошибка загрузки дел');
-			});
-	}, [refreshTodosFlag]);
-
-	const requestAddNewTodo = (newTodo) => {
-		fetch('http://localhost:3000/todos', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify(newTodo),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Новое дело добавлено, ответ сервера: ', response);
-				refreshTodos();
-			});
+	const toggleSorted = () => {
+		setIsSorted(!isSorted);
 	};
 
-	const requestEditTodo = (id, updatingTodo) => {
-		fetch(`http://localhost:3000/todos/${id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify(updatingTodo),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Дело обновлено, ответ сервера: ', response);
-				setEditingTodoId(null);
-				refreshTodos();
-			});
-	};
-
-	const requestDeleteTodo = (id) => {
-		fetch(`http://localhost:3000/todos/${id}`, {
-			method: 'DELETE',
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Дело удалено, ответ сервера: ', response);
-				refreshTodos();
-			});
-	};
-
-	const requestCompletedTodo = (id) => {
-		const todoToToggle = todos.find((todo) => todo.id === id);
-
-		fetch(`http://localhost:3000/todos/${id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-			body: JSON.stringify({ ...todoToToggle, completed: !todoToToggle.completed }),
-		})
-			.then((rawResponse) => rawResponse.json())
-			.then((response) => {
-				console.log('Дело обновлено, ответ сервера: ', response);
-				setEditingTodoId(null);
-				refreshTodos();
-			});
-	};
+	const todos = useRequestGetTodos(refreshTodosFlag);
+	const requestAddNewTodo = useRequestAddNewTodo(refreshTodos);
+	const requestEditTodo = useRequestEditingTodo(refreshTodos, setEditingTodoId);
+	const requestDeleteTodo = useRequestDeletetodo(refreshTodos);
+	const requestCompletedTodo = useRequestCompletedTodo(
+		todos,
+		refreshTodos,
+		setEditingTodoId,
+	);
 
 	const handleEditTodo = (id) => {
 		const todoToEdit = todos.find((todo) => todo.id === id);
 		setTodoValue(todoToEdit.title);
 		setEditingTodoId(id);
 	};
+
+	const sortedTodos = isSorted
+		? [...todos].sort((a, b) => a.title.localeCompare(b.title))
+		: todos;
 
 	return (
 		<div className={styles.app}>
@@ -92,9 +50,11 @@ export const App = () => {
 					requestAddNewTodo={requestAddNewTodo}
 					editingTodoId={editingTodoId}
 					requestEditTodo={requestEditTodo}
+					isSorted={isSorted}
+					toggleSorted={toggleSorted}
 				/>
 				<Todolist
-					todos={todos}
+					todos={sortedTodos}
 					onDelete={requestDeleteTodo}
 					onEdit={handleEditTodo}
 					onToggle={requestCompletedTodo}

@@ -1,17 +1,71 @@
-form {
+.form {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
+	gap: 5px;
+	height: 100px;
+	width: 80%;
+}
+
+.form input {
+	width: 60%;
+	height: 50px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 0 10px;
+	font-size: 16px;
+}
+
+.buttonContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	width: auto;
+	height: auto;
+	gap: 5px;
+}
+
+.newtodo,
+.sortButtonOn,
+.sortButtonOff {
+	border: none;
+	padding: 15px;
+	font-size: 16px;
+	border-radius: 30px;
+	margin: 0;
+	cursor: pointer;
+	color: white;
+	transition:
+		background-color 0.3s,
+		transform 0.2s;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .newtodo {
-	border: none;
-	padding: 15px;
-	font-size: 18px;
-	border-radius: 4px;
-	margin-bottom: 20px;
-	margin-left: 5px;
-	background-color: rgb(76, 141, 255);
-	color: #fff;
+	background: linear-gradient(135deg, #69adff, #499bff);
+}
+
+.newtodo:hover {
+	background: linear-gradient(135deg, #499bff, #69adff);
+	transform: translateY(-2px);
+}
+
+.sortButtonOn {
+	background: linear-gradient(135deg, #4caf50, #45a049);
+}
+
+.sortButtonOn:hover {
+	background: linear-gradient(135deg, #45a049, #4caf50);
+	transform: translateY(-2px);
+}
+
+.sortButtonOff {
+	background: linear-gradient(135deg, #af4c4c, #ab4545);
+}
+
+.sortButtonOff:hover {
+	background: linear-gradient(135deg, #ab4545, #af4c4c);
+	transform: translateY(-2px);
 }

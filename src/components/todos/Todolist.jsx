@@ -14,11 +14,17 @@ export const Todolist = ({ todos, onDelete, onEdit, onToggle }) => {
 						>
 							{title}
 						</p>
-						<button onClick={() => onToggle(id)}>
-							{completed ? 'Не выполнено' : 'Выполнено'}
-						</button>
-						<button onClick={() => onEdit(id)}>Редактировать</button>
-						<button onClick={() => onDelete(id)}>Удалить</button>
+						<div className={styles.buttons}>
+							<button onClick={() => onToggle(id)}>
+								<img src="../../../img/completed-icon.png" />
+							</button>
+							<button onClick={() => onEdit(id)}>
+								<img src="../../../img/edit-icon.png" />
+							</button>
+							<button onClick={() => onDelete(id)}>
+								<img src="../../../img/delete-icon.png" />
+							</button>
+						</div>
 					</div>
 				);
 			})}
